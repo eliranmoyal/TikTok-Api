@@ -82,6 +82,9 @@ class TikTokApi:
             self.height = "1080"
 
         self.request_delay = kwargs.get("request_delay", None)
+        self._only_create_urls = False
+        if kwargs.get("_only_create_urls", False):
+            self._only_create_urls = True
 
     @staticmethod
     def get_instance(**kwargs):
@@ -169,6 +172,8 @@ class TikTokApi:
 
         query = {"verifyFp": verify_fp, "did": did, "_signature": signature}
         url = "{}&{}".format(kwargs["url"], urlencode(query))
+        if self._only_create_urls:
+            return {"url":url}
         r = requests.get(
             url,
             headers={
@@ -479,6 +484,8 @@ class TikTokApi:
             )
 
             res = self.getData(url=api_url, **kwargs)
+            if self._only_create_urls:
+                return res
 
             if "items" in res.keys():
                 for t in res["items"]:
