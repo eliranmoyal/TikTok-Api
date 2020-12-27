@@ -84,7 +84,8 @@ class browser:
 
         page = self.create_page(set_useragent=True)
         self.get_params(page)
-        page.close()
+        self._page = page
+        # page.close()
 
     def get_params(self, page) -> None:
         # self.browser_language = await self.page.evaluate("""() => { return
@@ -161,7 +162,8 @@ class browser:
         url = kwargs.get("url", None)
         if url is None:
             raise Exception("sign_url required a url parameter")
-        page = self.create_page()
+        # page = self.create_page()
+        page = self._page
         verifyFp = "".join(
             random.choice(
                 string.ascii_lowercase + string.ascii_uppercase + string.digits
@@ -201,7 +203,7 @@ class browser:
         }"""
             ),
         )
-        page.close()
+        # page.close()
 
     def clean_up(self):
         try:
@@ -211,8 +213,8 @@ class browser:
         # playwright.stop()
 
     def find_redirect(self, url):
-        self.page.goto(url, {"waitUntil": "load"})
-        self.redirect_url = self.page.url
+        self._page.goto(url, {"waitUntil": "load"})
+        self.redirect_url = self._page.url
 
     def __format_proxy(self, proxy):
         if proxy is not None:
