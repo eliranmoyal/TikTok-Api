@@ -74,6 +74,10 @@ class browser:
         if self.executablePath is not None:
             self.options["executablePath"] = self.executablePath
 
+        self.create_browser_and_get_page()
+        # page.close()
+
+    def create_browser_and_get_page(self):
         try:
             self.browser = get_playwright().webkit.launch(
                 args=self.args, **self.options
@@ -81,11 +85,10 @@ class browser:
         except Exception as e:
             raise e
             logging.critical(e)
-
         page = self.create_page(set_useragent=True)
         self.get_params(page)
         self._page = page
-        # page.close()
+        return page
 
     def get_params(self, page) -> None:
         # self.browser_language = await self.page.evaluate("""() => { return
@@ -184,8 +187,13 @@ class browser:
             did = str(random.randint(10000, 999999999))
         else:
             did = self.did
-
-        page.setContent("<script> " + get_acrawler() + " </script>")
+        try:
+            page.setContent("<script> " + get_acrawler() + " </script>")
+        except Exception as e:
+            print(e)
+            print("Trying to get page and trying again")
+            page = self.create_browser_and_get_page()
+            page.setContent("<script> " + get_acrawler() + " </script>")
         return (
             verifyFp,
             did,
