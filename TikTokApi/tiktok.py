@@ -434,7 +434,7 @@ class TikTokApi:
         return response[:count]
 
     def userPosts(
-        self, userID, secUID, count=30, minCursor=0, maxCursor=0, **kwargs
+        self, userID, secUID, count=30, cursor=0, **kwargs
     ) -> dict:
         """Returns a dictionary listing TikToks given a user's ID and secUID
 
@@ -471,15 +471,14 @@ class TikTokApi:
                 "id": userID,
                 "type": 1,
                 "secUid": secUID,
-                "maxCursor": maxCursor,
-                "minCursor": minCursor,
+                "cursor": cursor,
                 "sourceType": 8,
                 "appId": 1233,
                 "region": region,
                 "priority_region": region,
                 "language": language,
             }
-            api_url = "{}api/item_list/?{}&{}".format(
+            api_url = "{}api/post/item_list/?{}&{}".format(
                 BASE_URL, self.__add_new_params__(), urlencode(query)
             )
 
@@ -487,8 +486,8 @@ class TikTokApi:
             if self._only_create_urls:
                 return res
 
-            if "items" in res.keys():
-                for t in res["items"]:
+            if "itemList" in res.keys():
+                for t in res["itemList"]:
                     response.append(t)
 
             if not res["hasMore"] and not first:
@@ -496,7 +495,7 @@ class TikTokApi:
                 return response
 
             realCount = count - len(response)
-            maxCursor = res["maxCursor"]
+            maxCursor = res["cursor"]
 
             first = False
 
